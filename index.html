@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#1251A3" />
+<title>身体診察 ランダム出題</title>
+<style>
+  :root {
+    --primary: #1251A3;
+    --primary-light: #1a6fdb;
+    --primary-dark: #0d3d7a;
+    --accent: #00b4d8;
+    --bg: #f0f4fa;
+    --surface: #ffffff;
+    --text: #1a2332;
+    --text-sub: #5a6a7e;
+    --border: #dde3ee;
+    --radius: 14px;
+    --shadow: 0 2px 16px rgba(18,81,163,.10);
+    --shadow-lg: 0 8px 32px rgba(18,81,163,.16);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+    color: #fff;
+    padding: 20px 24px 18px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(18,81,163,.3);
+  }
+  header .inner { max-width: 640px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+  header .logo { font-size: 1.6rem; }
+  header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: .02em; }
+  header p  { font-size: .78rem; opacity: .8; margin-top: 2px; }
+
+  main { max-width: 640px; margin: 0 auto; padding: 28px 16px 60px; }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 16px;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .category-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    text-align: left;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s, transform .1s;
+  }
+  .category-btn:hover {
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-1px);
+  }
+  .category-btn:active { transform: translateY(0); }
+  .category-btn .emoji { font-size: 1.5rem; }
+
+  .result-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    font-size: .8rem;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 999px;
+  }
+  .badge.sub {
+    background: var(--accent);
+  }
+
+  .item-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .item-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: .98rem;
+    font-weight: 600;
+  }
+  .item-list li .num {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: .8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  button.action {
+    flex: 1 1 auto;
+    min-width: 140px;
+    padding: 13px 18px;
+    border-radius: 10px;
+    border: none;
+    font-size: .92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity .15s, transform .1s;
+  }
+  button.action:active { transform: translateY(1px); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: #fff;
+  }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--primary-dark);
+    border: 1.5px solid var(--border) !important;
+  }
+  .btn-primary:hover, .btn-secondary:hover { opacity: .88; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <span class="logo">🩺</span>
+    <div>
+      <h1>身体診察 ランダム出題</h1>
+      <p>カテゴリを選ぶと、出題項目を4つランダムに表示します</p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="screen-select" class="card">
+    <div class="card-title">出題カテゴリを選んでください</div>
+    <div class="category-grid" id="category-grid"></div>
+  </section>
+
+  <section id="screen-result" class="card hidden">
+    <div class="result-header" id="result-header"></div>
+    <ol class="item-list" id="item-list"></ol>
+    <div class="btn-row">
+      <button class="action btn-primary" id="btn-redraw">🔄 もう一度抽選</button>
+      <button class="action btn-secondary" id="btn-back">← カテゴリ選択に戻る</button>
+    </div>
+  </section>
+</main>
+
+<script>
+  // 課題テキストに基づく出題データ（表示順は課題テキストの並び順を維持）
+  const DATA = {
+    "全身状態とバイタル": {
+      emoji: "❤️",
+      count: 4,
+      postures: {
+        "座位": [
+          "体温",
+          "呼吸",
+          "橈骨動脈の触診（座位）",
+          "触診法による上肢の血圧測定（座位）",
+          "聴診法による上肢の血圧測定（座位）"
+        ],
+        "仰臥位": [
+          "橈骨動脈の触診（仰臥位）",
+          "触診法による上肢の血圧測定（仰臥位）",
+          "聴診法による上肢の血圧測定（仰臥位）",
+          "足背動脈の触診",
+          "後脛骨動脈の触診",
+          "膝窩動脈の触診",
+          "下腿・足背の浮腫"
+        ]
+      }
+    },
+    "頭頸部": {
+      emoji: "🧠",
+      count: 5,
+      items: [
+        "頭",
+        "眼",
+        "耳",
+        "鼻・副鼻腔",
+        "口唇・口腔・咽頭",
+        "唾液腺",
+        "頭頸部リンパ節",
+        "甲状腺"
+      ]
+    },
+    "胸部": {
+      emoji: "🫁",
+      count: 5,
+      items: [
+        "視診（頸部血管）",
+        "聴診（頸部血管）",
+        "触診（頸部血管）",
+        "前胸部の視診",
+        "視診（心臓）",
+        "触診（心臓）",
+        "聴診（心臓）",
+        "視診（肺：前胸部）",
+        "打診（肺：前胸部）",
+        "聴診（肺：前胸部）",
+        "背部の視診",
+        "視診（肺：背部）",
+        "打診（肺：背部）",
+        "聴診（肺：背部）"
+      ]
+    },
+    "腹部": {
+      emoji: "🫃",
+      count: 5,
+      items: [
+        "視診",
+        "腸蠕動音の聴診",
+        "腹部の血管音の聴診",
+        "腹部全体の打診",
+        "肝臓の打診",
+        "脾臓の打診",
+        "浅い触診",
+        "深い触診",
+        "肝臓の触診",
+        "脾臓の触診"
+      ]
+    },
+    "神経": {
+      emoji: "⚡",
+      count: 7,
+      items: [
+        "視野",
+        "眼球運動・眼振",
+        "瞼裂・瞳孔／対光反射",
+        "顔面の感覚",
+        "顔面筋",
+        "軟口蓋・咽頭後壁の動き",
+        "舌",
+        "胸鎖乳突筋",
+        "上半身の不随意運動",
+        "Barré徴候（上肢）",
+        "筋トーヌス（肘関節）",
+        "鼻指鼻試験",
+        "手回内・回外試験",
+        "三角筋",
+        "上腕二頭筋",
+        "手根伸筋群（手関節の背屈）",
+        "通常歩行",
+        "つぎ足歩行",
+        "Romberg試験",
+        "踵膝試験",
+        "腸腰筋",
+        "前脛骨筋",
+        "四肢の触覚と痛覚",
+        "下顎反射",
+        "上腕二頭筋反射",
+        "上腕三頭筋反射",
+        "膝蓋腱反射",
+        "アキレス腱反射",
+        "Babinski徴候（反射）",
+        "項部硬直",
+        "認知機能の診察"
+      ]
+    }
+  };
+
+  const screenSelect = document.getElementById('screen-select');
+  const screenResult = document.getElementById('screen-result');
+  const categoryGrid = document.getElementById('category-grid');
+  const resultHeader = document.getElementById('result-header');
+  const itemList = document.getElementById('item-list');
+  const btnRedraw = document.getElementById('btn-redraw');
+  const btnBack = document.getElementById('btn-back');
+
+  let currentCategory = null;
+
+  // カテゴリ一覧ボタンを生成
+  Object.keys(DATA).forEach(name => {
+    const btn = document.createElement('button');
+    btn.className = 'category-btn';
+    btn.innerHTML = `<span class="emoji">${DATA[name].emoji}</span><span>${name}</span>`;
+    btn.addEventListener('click', () => {
+      currentCategory = name;
+      draw();
+    });
+    categoryGrid.appendChild(btn);
+  });
+
+  // 配列から順序を保ったままランダムにn個選ぶ
+  function pickRandomKeepOrder(arr, n) {
+    const indices = arr.map((_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    const chosen = indices.slice(0, n).sort((a, b) => a - b);
+    return chosen.map(i => arr[i]);
+  }
+
+  function draw() {
+    const category = DATA[currentCategory];
+    let posture = null;
+    let pool;
+
+    if (category.postures) {
+      const postureNames = Object.keys(category.postures);
+      posture = postureNames[Math.floor(Math.random() * postureNames.length)];
+      pool = category.postures[posture];
+    } else {
+      pool = category.items;
+    }
+
+    const picked = pickRandomKeepOrder(pool, Math.min(category.count, pool.length));
+    renderResult(picked, posture);
+  }
+
+  function renderResult(items, posture) {
+    resultHeader.innerHTML = `<span class="badge">${currentCategory}</span>` +
+      (posture ? `<span class="badge sub">${posture}</span>` : '');
+
+    itemList.innerHTML = '';
+    items.forEach((text, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="num">${i + 1}</span><span>${text}</span>`;
+      itemList.appendChild(li);
+    });
+
+    screenSelect.classList.add('hidden');
+    screenResult.classList.remove('hidden');
+  }
+
+  btnRedraw.addEventListener('click', draw);
+  btnBack.addEventListener('click', () => {
+    screenResult.classList.add('hidden');
+    screenSelect.classList.remove('hidden');
+  });
+</script>
+</body>
+</html>
