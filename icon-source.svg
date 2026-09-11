@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d3d7a"/>
+      <stop offset="100%" stop-color="#1a6fdb"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- クリップボード本体 -->
+  <rect x="146" y="120" width="220" height="290" rx="20" fill="none" stroke="#0b1f3a" stroke-width="18"/>
+  <!-- 上部のクリップ -->
+  <rect x="206" y="94" width="100" height="42" rx="14" fill="#0b1f3a"/>
+
+  <!-- チェックリスト項目（OSCEの手技チェックを表現） -->
+  <g stroke="#0b1f3a" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M172 210 l16 16 l30 -34"/>
+    <line x1="230" y1="205" x2="330" y2="205"/>
+    <path d="M172 270 l16 16 l30 -34"/>
+    <line x1="230" y1="265" x2="330" y2="265"/>
+    <path d="M172 330 l16 16 l30 -34"/>
+    <line x1="230" y1="325" x2="330" y2="325"/>
+  </g>
+</svg>

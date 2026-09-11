@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#1251A3" />
 <title>身体診察 ランダム出題</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="favicon-32.png" sizes="32x32" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <style>
   :root {
     --primary: #1251A3;
@@ -27,6 +32,20 @@
     color: var(--text);
     min-height: 100vh;
   }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(.85); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+  }
+
   header {
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
     color: #fff;
@@ -35,7 +54,7 @@
     box-shadow: 0 2px 12px rgba(18,81,163,.3);
   }
   header .inner { max-width: 640px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
-  header .logo { font-size: 1.6rem; }
+  header .logo { font-size: 1.6rem; animation: logoFloat 3s ease-in-out infinite; }
   header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: .02em; }
   header p  { font-size: .78rem; opacity: .8; margin-top: 2px; }
 
@@ -48,6 +67,7 @@
     padding: 24px;
     margin-bottom: 20px;
     border: 1px solid var(--border);
+    animation: fadeInUp .45s cubic-bezier(.2,.8,.2,1) both;
   }
   .card-title {
     font-size: .95rem;
@@ -75,15 +95,18 @@
     font-weight: 700;
     color: var(--text);
     cursor: pointer;
-    transition: border-color .15s, box-shadow .15s, transform .1s;
+    transition: border-color .15s, box-shadow .2s, transform .15s;
+    opacity: 0;
+    animation: fadeInUp .4s cubic-bezier(.2,.8,.2,1) both;
   }
   .category-btn:hover {
     border-color: var(--primary-light);
     box-shadow: var(--shadow-lg);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
   }
-  .category-btn:active { transform: translateY(0); }
-  .category-btn .emoji { font-size: 1.5rem; }
+  .category-btn:active { transform: translateY(0) scale(.99); }
+  .category-btn .emoji { font-size: 1.5rem; display: inline-block; transition: transform .2s; }
+  .category-btn:hover .emoji { transform: scale(1.15) rotate(-4deg); }
 
   .result-header {
     display: flex;
@@ -100,6 +123,7 @@
     font-weight: 700;
     padding: 5px 14px;
     border-radius: 999px;
+    animation: popIn .35s cubic-bezier(.34,1.56,.64,1) both;
   }
   .badge.sub {
     background: var(--accent);
@@ -122,6 +146,8 @@
     padding: 14px 16px;
     font-size: .98rem;
     font-weight: 600;
+    opacity: 0;
+    animation: fadeInUp .4s cubic-bezier(.2,.8,.2,1) both;
   }
   .item-list li .num {
     flex-shrink: 0;
@@ -151,9 +177,9 @@
     font-size: .92rem;
     font-weight: 700;
     cursor: pointer;
-    transition: opacity .15s, transform .1s;
+    transition: opacity .15s, transform .15s, box-shadow .15s;
   }
-  button.action:active { transform: translateY(1px); }
+  button.action:active { transform: translateY(1px) scale(.98); }
   .btn-primary {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     color: #fff;
@@ -163,7 +189,8 @@
     color: var(--primary-dark);
     border: 1.5px solid var(--border) !important;
   }
-  .btn-primary:hover, .btn-secondary:hover { opacity: .88; }
+  .btn-primary:hover { opacity: .92; box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+  .btn-secondary:hover { opacity: .88; }
 
   .hidden { display: none !important; }
 </style>
@@ -320,9 +347,10 @@
   let currentCategory = null;
 
   // カテゴリ一覧ボタンを生成
-  Object.keys(DATA).forEach(name => {
+  Object.keys(DATA).forEach((name, i) => {
     const btn = document.createElement('button');
     btn.className = 'category-btn';
+    btn.style.animationDelay = (i * 0.06) + 's';
     btn.innerHTML = `<span class="emoji">${DATA[name].emoji}</span><span>${name}</span>`;
     btn.addEventListener('click', () => {
       currentCategory = name;
@@ -366,6 +394,7 @@
     itemList.innerHTML = '';
     items.forEach((text, i) => {
       const li = document.createElement('li');
+      li.style.animationDelay = (i * 0.07) + 's';
       li.innerHTML = `<span class="num">${i + 1}</span><span>${text}</span>`;
       itemList.appendChild(li);
     });
@@ -379,6 +408,10 @@
     screenResult.classList.add('hidden');
     screenSelect.classList.remove('hidden');
   });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+  }
 </script>
 </body>
 </html>
