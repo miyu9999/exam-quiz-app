@@ -1,4 +1,4 @@
-const CACHE_NAME = 'exam-quiz-v3';
+const CACHE_NAME = 'exam-quiz-v4';
 const APP_SHELL = ['./', './index.html', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {
