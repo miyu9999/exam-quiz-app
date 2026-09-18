@@ -1,4 +1,4 @@
-const CACHE_NAME = 'exam-quiz-v4';
+const CACHE_NAME = 'exam-quiz-v5';
 const APP_SHELL = ['./', './index.html', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {
@@ -13,6 +13,17 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
+// ネットワーク優先：オンライン時は常に最新を取得しキャッシュを更新。オフライン時のみキャッシュにフォールバック
 self.addEventListener('fetch', (e) => {
-  e.respondWith(caches.match(e.request).then((cached) => cached || fetch(e.request)));
+  e.respondWith(
+    fetch(e.request)
+      .then((response) => {
+        if (response.ok && e.request.method === 'GET') {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+        }
+        return response;
+      })
+      .catch(() => caches.match(e.request))
+  );
 });
